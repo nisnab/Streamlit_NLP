@@ -1,0 +1,27 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+
+    - name: Set up Docker
+      uses: azure/docker-login@v1
+      with:
+        login-server: testregistry01nis.azurecr.io
+        username: ${{ secrets.ACR_USERNAME }}
+        password: ${{ secrets.ACR_PASSWORD }}
+
+    - name: Build Docker image
+      run: docker build -t nlpclass .
+
+    - name: Push Docker image to Azure Container Registry
+      run: docker push testregistry01nis.azurecr.io/nlpclass:latest
